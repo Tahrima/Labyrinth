@@ -68,7 +68,7 @@ void algorithm (Cell ** all){
 		/*int cool = all[0][0].getDirection("border", 'n');
 		if (cool == 1)*/
 		
-	}*/
+	}
 	/*Algorithm
 	   
 	-create a CellStack (LIFO) to hold a list of cell locations  
