@@ -29,8 +29,8 @@ public:
 	Cell ();
 	void setCell(string, char, int);
 	void setAllofCell(string, string);
-	void display(); // function for testing 
-	void drawMaze(int, int);
+	void display(); // function for testing stuff 
+	int getDirection(string, char);
 };
 
 void Cell::setCell(string info, char dir, int setting ){
@@ -106,15 +106,47 @@ Cell::Cell(){
 }
 
 void Cell::display(){
-	ofstream out("cell.txt", ios::app);
+	/*ofstream out("cell.txt", ios::app);
 	out << border.n << " ";
 	out << border.s << " ";
 	out << border.e << " ";
 	out << border.w << " ";
-	out << endl;
+	out << endl;*/
 }
 
-void Cell::drawMaze(int length, int height){
+int Cell::getDirection(string info, char setting){
+	if (info == "border"){
+		switch (setting){
+			case 'n': return border.n;	break;
+			case 's': return border.s;	break;
+			case 'e': return border.e;	break;
+			case 'w': return border.w;	break;
+		}
+	}
+	else if (info == "walls"){
+		switch (setting){
+			case 'n': return walls.n;	break;
+			case 's': return walls.s;	break;
+			case 'e': return walls.e;	break;
+			case 'w': return walls.w;	break;
+		}
+	}
+	else if (info == "backtrack"){
+		switch (setting){
+			case 'n': return backtrack.n;	break;
+			case 's': return backtrack.s;	break;
+			case 'e': return backtrack.e;	break;
+			case 'w': return backtrack.w;	break;
+		}
+	}
+	else if (info == "solution"){
+		switch (setting){
+			case 'n': return solution.n;	break;
+			case 's': return solution.s;	break;
+			case 'e': return solution.e;	break;
+			case 'w': return solution.w;	break;
+		}
+	}
 }
 
 #endif
