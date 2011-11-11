@@ -83,10 +83,13 @@ void Cell::setAllofCell(string info, string setting){
 	char east = setting.at(2);
 	char west = setting.at(3);
 
-	int n = north;
-	int s = south;
-	int e = east;
-	int w = west;
+	int n = north - 48;
+	int s = south - 48;
+	int e = east - 48;
+	int w = west - 48;
+
+	ofstream come ("neigh.txt");
+	come << n << s << e << w;
 	
 	if (info == "border")
 		border.setAll(n,s,e,w);
@@ -106,7 +109,7 @@ Cell::Cell(){
 }
 
 void Cell::display(){
-	/*ofstream out("cell.txt", ios::app);
+	/*ofstream out("borders.txt", ios::app); //stores border bits in output file
 	out << border.n << " ";
 	out << border.s << " ";
 	out << border.e << " ";

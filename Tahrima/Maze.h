@@ -12,8 +12,8 @@ void draw()
 	dbLoadImage("h.png", 3); // 1 x 20
 	
 	int sc = 1; // cell counter
-	int scv = 500; // vertical line counter
-	int sch = 1000; // horizontal line counter
+	int scv = 501; // vertical line counter
+	int sch = 1001; // horizontal line counter
 
 	for(int y = 0; y < 21; ++y) // horizontal 
 	{

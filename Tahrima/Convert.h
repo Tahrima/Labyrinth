@@ -1,3 +1,6 @@
+#ifndef _Convert_h_
+#define _Convert_h_
+
 #include <iostream>
 
 using namespace std;
@@ -21,3 +24,5 @@ int getarr(int r, int c){
 	r = r - 1;
 	return r * 20 + c;
 }
+
+#endif
