@@ -76,10 +76,9 @@ void DarkGDK ( void )
 #include "DarkGDK.h"
 #include "Convert.h"
 #include "CellImp.h"
+#include <fstream>
 
 using namespace std;
-
-
 
 void DarkGDK ( void ){
 
@@ -112,13 +111,15 @@ void DarkGDK ( void ){
 	
 	int row = getrow(Current); // returns row from Convert.h
 	int col = getcol(Current); // returns column
-	
+
+	remove("order.txt");
+	remove("walllist.txt");
 	ofstream store("order.txt", ios::app);
 	store << Current << " " << row << " " << col << endl;
 
 	vector<string> list;
 	pushbacker(maze[row][col], Current, list);
-	walldestiny(list, Current);
+	walldestiny(list, Current, maze);
 
 	while ( LoopGDK ( ) )
 	{

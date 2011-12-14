@@ -5,11 +5,13 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "Convert.h"
 
 using namespace std;
 
 class Cell{
-friend void pushbacker(Cell&, int, vector<string>);
+friend void pushbacker(Cell&, int, vector<string> *);
+friend void walldestiny(vector<string> &, int);
 private:
 	class Direction{	// nested class Direction
 		public:
@@ -148,42 +150,145 @@ int Cell::getDirection(string info, char setting){
 	}
 }
 
-void pushbacker (Cell & current, int cur, vector<string> list){
-	if (current.border.n != 1 && current.walls.n != 0)
-		list.push_back(cur + "n");	
-	if (current.border.s != 1 && current.walls.s != 0)
-		list.push_back(cur + "s");
-	if (current.border.e != 1 && current.walls.e != 0)
-		list.push_back(cur + "e");
-	if (current.border.w != 1 && current.walls.w != 0)
-		list.push_back(cur + "w");
+void walldestiny (vector<string> &, int, Cell **);
+
+void pushbacker (Cell & current, int cur, vector<string> &list){
+
+	ofstream write("walllist.txt", ios::app);
+	ifstream read ("walllist.txt");
+	string wall;
+
+	if (current.border.n != 1 && current.walls.n != 0){
+		write << cur << "n" << endl;
+		read >> wall;
+		list.push_back(wall);
+	}
+	if (current.border.s != 1 && current.walls.s != 0){
+		write << cur << "s" << endl;
+		read >> wall;
+		list.push_back(wall);
+	}
+	if (current.border.e != 1 && current.walls.e != 0){
+		write << cur << "e" << endl;
+		read >> wall;
+		list.push_back(wall);
+	}
+	if (current.border.w != 1 && current.walls.w != 0){
+		write << cur << "w" << endl;
+		read >> wall;
+		list.push_back(wall);
+	}
 }
 
-void walldestiny (vector<string> list, int cur){
+void walldestiny (vector<string> &list, int cur, Cell ** maze){
 	
-	//ofstream store("order.txt", ios::app);
+	ofstream store("order.txt", ios::app);
 
-	//int w = rand() % list.size() + 1;
-	/*string wall = list[w];
-
+	int size = list.size();
+	store << size << endl;
+	
+	int s = rand()% size;
+	store << s << endl;
+	
+	string wall = list[s];
 	store << wall << endl;
 
-	int s = wall.size();
+	int w = wall.size();
+	store << w << endl;
 	char num[3];
-	for (int k = 0; k < s - 1; ++k)
+	for (int k = 0; k < w - 1; ++k)
 		num[k] = wall[k];
 	int numero = atoi (num);
-	char wallo = wall[s];
+	char wallo = wall[w-1];
 
-	store << numero << " " << wallo;*/
+	store << numero << " " << wallo;
+
+	int neighbor;
+
+	if (wallo == 'n')
+		neighbor = cur - 20;
+	else if (wallo == 's')
+		neighbor = cur + 20;
+	else if (wallo == 'e')
+		neighbor = cur + 1;
+	else if (wallo == 'w')
+		neighbor = cur - 1;
+	
+	int r = getrow(neighbor);
+	int c = getcol(neighbor);
+
+	if (maze[r][c].Visited() == 0){
+		list[s] = -2; // delete or neg value
+	else if (maze[r][c].Visited() == 1){
+		//delete the wall
+		// 
+
+
+
+
+
 }
-		
-	
-	
-	/*int neighbors[4];
+/*
+int* get_neighbors_with_walls (Cell ** all, int rc, int cc, int cur){
+
+	int neighbors[4];
 		neighbors[0] = cur - 20; //  N
 		neighbors[1] = cur + 20; // S
 		neighbors[2] = cur + 1; // E
-		neighbors[3] = cur - 1; // W*/
+		neighbors[3] = cur - 1; // W
 
+	//ofstream haha ("neighbors.txt", ios::app);
+
+	int final[5] = {0}; // final # of neighbors
+	char dir[4] = { 'n', 's', 'e', 'w'}; // corresponds to neighbor array
+	int c = 0;
+	bool n[4]; // stores if neighbor will be in final array
+
+	for(int k = 0; k < 4; ++k){
+
+		if (neighbors[k] > 0 && neighbors[k] < 401){ // if neighbor in range
+
+		int row = getrow(neighbors[k]); 
+		int col = getcol(neighbors[k]);
+
+		int counter = 0;
+
+		// retreive if all walls  up
+
+		if ( all[row][col].getDirection("walls", 'n') == 1)
+			++counter;
+		if ( all[row][col].getDirection("walls", 's') == 1)
+			++counter;
+		if ( all[row][col].getDirection("walls", 'e') == 1)
+			++counter;
+		if ( all[row][col].getDirection("walls", 'w') == 1)
+			++counter;
+
+		if (counter == 4){ // if all walls up
+			n[k] = true;
+		}
+		else
+			n[k] = false;
+		}
+		
+		if (neighbors[k] < 0 || neighbors[k] > 400) // defensive programming against out of range neighbors
+			n[k] = false;
+		
+		if (all[rc][cc].getDirection("border", dir[k]) == 1) // defensive programming against out of range neighbors due to border
+			n[k] = false;
+
+		if (n[k] == true){
+			final[c+1] = neighbors[k]; // if bool is still true by the end of loop, store in final array
+			//haha << final[c+1] << " ";
+			++c;
+		}
+	}
+	//haha << endl;
+	//ofstream lala ("bool.txt", ios::app);
+	//lala << rc << " " << cc << ": " << n[0] << " " << n[1] << " " << n[2] << " " << n[3] << endl;
+	final[0] = c; // final[0] stores number of usable neighbors
+	return final;
+}
+
+*/
 #endif
