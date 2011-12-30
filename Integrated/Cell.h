@@ -6,12 +6,14 @@
 #include <fstream>
 #include <vector>
 #include "Convert.h"
+#include <algorithm>
+#include "DarkGDK.h"
 
 using namespace std;
 
 class Cell{
 friend void pushbacker(Cell&, int, vector<string> *);
-friend void walldestiny(vector<string> &, int);
+friend void walldestiny(vector<string> *, int);
 private:
 	class Direction{	// nested class Direction
 		public:
@@ -29,6 +31,7 @@ public:
 	void setAllofCell(string, string);
 	int getDirection(string, char);
 	int Visited();
+	void setVisited(int a){visited = a;}
 
 	Direction border; // using objects of class Dimension as private data members
 	Direction walls;
@@ -150,12 +153,13 @@ int Cell::getDirection(string info, char setting){
 	}
 }
 
-void walldestiny (vector<string> &, int, Cell **);
+//void walldestiny (vector<string> &, int, Cell **);
 
 void pushbacker (Cell & current, int cur, vector<string> &list){
-
-	ofstream write("walllist.txt", ios::app);
-	ifstream read ("walllist.txt");
+	
+	remove("temp.txt");
+	ofstream write("temp.txt", ios::app);
+	ifstream read ("temp.txt");
 	string wall;
 
 	if (current.border.n != 1 && current.walls.n != 0){
@@ -178,117 +182,136 @@ void pushbacker (Cell & current, int cur, vector<string> &list){
 		read >> wall;
 		list.push_back(wall);
 	}
+
+	remove("walllist.txt");
+	ofstream w("walllist.txt", ios::app);
+	for (int i = 0; i < list.size(); ++i)
+		w << list[i] << endl;
+
 }
 
-void walldestiny (vector<string> &list, int cur, Cell ** maze){
+void walldestiny (vector<string> &list, Cell ** maze){
+
+	for (int i = 0; i < 5; ++i){
+    
+        ofstream store("order.txt", ios::app);
+
+        int size = list.size(); // gets size of wall list
+        //store << size << endl;
+        
+        int s = rand()% size;  // gets random # from wall list
+        //store << s << endl; 
+        
+        string wall = list[s]; // gets that string from wall list[random #]
+        store << wall << endl;
+
+        int w = wall.size(); // parsing of string to int and char
+        //store << w << endl;
+        char num[3];
+        for (int k = 0; k < w - 1; ++k)
+            num[k] = wall[k];
+        int numero = atoi (num);
+        char wallo = wall[w-1];
+		
+		//NOW THE RANDOM WALL HAS BEEN SEPARATED INTO NUMBER(numero) AND DIRECTION(wallo)
+
+		int rand_row = getrow(numero);
+		int rand_col = getcol(numero);
+
+		store << rand_row << " " << rand_col << endl;
+		//bool border = false;*/
+
+        //store << numero << " " << wallo;
+        int neighbor;   // finds the neighbor cell number depending on char from the string
+
+		if (wallo == 'n' && maze[rand_row][rand_col].border.n != 1)
+            neighbor = numero - 20;
+        else if (wallo == 's' && maze[rand_row][rand_col].border.s != 1)
+            neighbor = numero + 20;
+        else if (wallo == 'e' && maze[rand_row][rand_col].border.e != 1)
+            neighbor = numero + 1;
+        else if (wallo == 'w' && maze[rand_row][rand_col].border.w != 1)
+            neighbor = numero - 1;
+        
+        int r = getrow(neighbor);
+        int c = getcol(neighbor);
+
+        char temp[5];
+        itoa(neighbor, temp, 10);
+
+        string nstring = temp;
+        char opposite;
+        
+        if(wallo == 'n'){
+            nstring.append("s");
+            opposite = 's';
+        }
+        else if(wallo == 's'){
+            nstring.append("n");
+            opposite = 'n';
+        }
+        else if(wallo == 'e'){
+            nstring.append("w");
+            opposite = 'w';
+        }
+        else if(wallo == 'w'){
+            nstring.append("e");
+            opposite = 'e';
+        }
+        
+        //WE NOW HAVE THE DUPLICATE WALL OF THE RANDOM WALL IN 'nstring'
+        //NOW WE MUST REMOVE 'nstring' ALONG WITH THE RANDOM WALL FROM THE WALL LIST
+
+        if (maze[r][c].Visited() == 0){//checks if neighboring cell is NOT visited
+            //list[s] = -2;// DELETE THE WALL
+            maze[r][c].setVisited(1);
+            maze[r][c].setCell("walls", opposite, 0);
+			//or
+            maze[rand_row][rand_col].setCell("walls", wallo, 0);
+
+            if (wallo == 'n')
+                dbDeleteSprite( (20 * (rand_row - 1)) + rand_col + 1000); // wall/line deletion
+            else if (wallo == 's')
+                dbDeleteSprite( (20 * (rand_row)) + rand_col + 1000);
+            else if (wallo == 'e')
+                dbDeleteSprite( (21 * (rand_row - 1)) + rand_col + 1 + 500);
+            else if (wallo == 'w')
+                dbDeleteSprite( (21 * (rand_row - 1)) + rand_col + 500);
+            
+            //dbDeleteSprite(numero); // box deletion
+            pushbacker(maze[r][c],neighbor, list);
+            list[s].erase();//REMOVE RANDOM WALL FROM WALL LIST
+            list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
+
+        }
+        else if (maze[r][c].Visited() == 1){//checks if neighboring cells IS visited
+            list[s].erase();//REMOVE RANDOM WALL FROM WALL LIST
+            list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
+        }
+    }
+} 
+
+	/*if (maze[r][c].Visited() == 0)//checks if neighboring cells is NOT visited
+	{
+		list[s] = -2; // DELETE THE WALL
+		if(wallo == 'n')
+			//DO STUFF
+		if(wallo == 'n')
+			//DO STUFF
+			if(wallo == 'n')
+			//DO STUFF
+			if(wallo == 'n')
+			//DO STUFF
+		maze[r][c].setCell("walls", 'n', 0);
+		maze[r][c].setVisited(1);
+	}
+	else if (maze[r][c].Visited() == 1)//checks if neighboring cells ARE visited
+	{
+		list[s] = -1; // REMOVE WALL FROM WALL LIST	
 	
-	ofstream store("order.txt", ios::app);
+	}
 
-	int size = list.size();
-	store << size << endl;
-	
-	int s = rand()% size;
-	store << s << endl;
-	
-	string wall = list[s];
-	store << wall << endl;
-
-	int w = wall.size();
-	store << w << endl;
-	char num[3];
-	for (int k = 0; k < w - 1; ++k)
-		num[k] = wall[k];
-	int numero = atoi (num);
-	char wallo = wall[w-1];
-
-	store << numero << " " << wallo;
-
-	int neighbor;
-
-	if (wallo == 'n')
-		neighbor = cur - 20;
-	else if (wallo == 's')
-		neighbor = cur + 20;
-	else if (wallo == 'e')
-		neighbor = cur + 1;
-	else if (wallo == 'w')
-		neighbor = cur - 1;
-	
-	int r = getrow(neighbor);
-	int c = getcol(neighbor);
-
-	if (maze[r][c].Visited() == 0){
-		list[s] = -2; // delete or neg value
-	else if (maze[r][c].Visited() == 1){
 		//delete the wall
 		// 
-
-
-
-
-
-}
-/*
-int* get_neighbors_with_walls (Cell ** all, int rc, int cc, int cur){
-
-	int neighbors[4];
-		neighbors[0] = cur - 20; //  N
-		neighbors[1] = cur + 20; // S
-		neighbors[2] = cur + 1; // E
-		neighbors[3] = cur - 1; // W
-
-	//ofstream haha ("neighbors.txt", ios::app);
-
-	int final[5] = {0}; // final # of neighbors
-	char dir[4] = { 'n', 's', 'e', 'w'}; // corresponds to neighbor array
-	int c = 0;
-	bool n[4]; // stores if neighbor will be in final array
-
-	for(int k = 0; k < 4; ++k){
-
-		if (neighbors[k] > 0 && neighbors[k] < 401){ // if neighbor in range
-
-		int row = getrow(neighbors[k]); 
-		int col = getcol(neighbors[k]);
-
-		int counter = 0;
-
-		// retreive if all walls  up
-
-		if ( all[row][col].getDirection("walls", 'n') == 1)
-			++counter;
-		if ( all[row][col].getDirection("walls", 's') == 1)
-			++counter;
-		if ( all[row][col].getDirection("walls", 'e') == 1)
-			++counter;
-		if ( all[row][col].getDirection("walls", 'w') == 1)
-			++counter;
-
-		if (counter == 4){ // if all walls up
-			n[k] = true;
-		}
-		else
-			n[k] = false;
-		}
-		
-		if (neighbors[k] < 0 || neighbors[k] > 400) // defensive programming against out of range neighbors
-			n[k] = false;
-		
-		if (all[rc][cc].getDirection("border", dir[k]) == 1) // defensive programming against out of range neighbors due to border
-			n[k] = false;
-
-		if (n[k] == true){
-			final[c+1] = neighbors[k]; // if bool is still true by the end of loop, store in final array
-			//haha << final[c+1] << " ";
-			++c;
-		}
-	}
-	//haha << endl;
-	//ofstream lala ("bool.txt", ios::app);
-	//lala << rc << " " << cc << ": " << n[0] << " " << n[1] << " " << n[2] << " " << n[3] << endl;
-	final[0] = c; // final[0] stores number of usable neighbors
-	return final;
-}
-
 */
 #endif

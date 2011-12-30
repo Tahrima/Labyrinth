@@ -10,8 +10,6 @@ using namespace std;
 
 void draw ();
 void initialize(int, int, Cell);
-int getrow(int);
-int getcol(int);
 
 void DarkGDK ( void )
 {	
@@ -38,9 +36,24 @@ void DarkGDK ( void )
 	initialize(r, c, all); // sets up Cell maze by setting borders
 	algorithm(all); // the entire algorithm
 
+	ofstream write ("col.txt", ios::app);
+
+	int yint = 405;
+	int xint = 405;
+
+	dbLoadImage("sprite.png", 4);
+	dbLoadImage("bigsquare.png", 5);
+
+	bool flag = true;
+	char key = '0';
+
 	while ( LoopGDK ( ) )
 	{
-		static bool bClick = false;
+
+		dbSetTextFont("Arial");
+		dbSetTextSize(15);
+		/* REDRAWS MAZE
+		static bool bClick = false; 
 		if ( dbMouseClick() == 1 )
 			bClick = true;
 		if( dbMouseClick() != 1 && bClick )
@@ -52,12 +65,113 @@ void DarkGDK ( void )
 				all2[i] = new Cell[c+1]; // creates 2nd dimension (d2)
 			initialize(r, c, all2);
 			algorithm(all2);
+		}*/
+
+		//dbSprite(1500, xint, yint, 4);
+
+		// NEED TO ACCOUNT FOR OUT OF RANGE COORDINATES 
+		// NEED TO FIND OUT WHY IT GOES OTHER PLACES SOMETIMES DURING COLLISION
+
+		/*while (flag == false){
+			if (key == 'n'){
+			while (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500){
+				yint += 2;
+				dbText(410, 20, "COLLISION!!!");
+				dbSprite(1500, xint, yint, 4);
+			}
+			flag = true;
+			}
+			else if (key == 's'){
+			while (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500){
+				yint -= 2;
+				dbText(410, 20, "COLLISION!!!");
+				dbSprite(1500, xint, yint, 4);
+			}
+			flag = true;
+			}
+			else if (key == 'e'){
+			while (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500){
+				xint -= 2;
+				dbText(410, 20, "COLLISION!!!");
+				dbSprite(1500, xint, yint, 4);
+			}
+			flag = true;
+			}
+			else if (key == 'w'){
+			while (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500){
+				xint += 2;
+				dbText(410, 20, "COLLISION!!!");
+				dbSprite(1500, xint, yint, 4);
+			}
+			flag = true;
+			}
+
+
+		}*/
+
+
+
+	/*	dbSprite(1499, 425, 425, 5);
+
+		if (flag == false){
+			while (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500){
+				if (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500,0) < 1001 && key == 'e'){
+					//xint = 5; 
+					//yint = 5;
+					xint -= 2;
+					dbText(410, 20, "Collision!!!");
+					dbSprite(1500, xint, yint, 4);
+				}
+				else if (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500,0) < 1001 && key == 'w'){
+					xint += 2;
+					//xint = 5; 
+					//yint = 5;
+					dbText(410, 20, "Collision!!!");
+					dbSprite(1500, xint, yint, 4);
+				}
+				else if (dbSpriteCollision(1500, 0) > 1000 && dbSpriteCollision(1500,0) < 1500 && key == 'n'){
+					yint += 2;
+					//xint = 5; 
+					//yint = 5;
+					dbText(410, 20, "Collision!!!");
+					dbSprite(1500, xint, yint, 4);
+				}
+				else if (dbSpriteCollision(1500, 0) > 1000 && dbSpriteCollision(1500,0) < 1500 && key == 's'){
+					yint -= 2;
+					//xint = 5; 
+					//yint = 5;
+					dbText(410, 20, "Collision!!!");
+					dbSprite(1500, xint, yint, 4);
+				}
+			}
+			flag = true;
 		}
 
-		dbSetTextFont("Arial");
-		dbSetTextSize(15);
+		if (dbUpKey() && !dbDownKey() && !dbRightKey() && !dbLeftKey() && flag == true){
+			yint -= 1;
+			key = 'n';
+		}
+		else if (dbDownKey() && !dbUpKey() && !dbRightKey() && !dbLeftKey() && flag == true){
+			yint += 1;
+			key = 's';
+		}
+		else if (dbRightKey() && !dbUpKey() && !dbDownKey() && !dbLeftKey() && flag == true){
+			xint += 1;
+			key = 'e';
+		}
+		else if (dbLeftKey() && !dbUpKey() && !dbDownKey() && !dbRightKey() && flag == true){
+			xint -= 1;
+			key = 'w';
+		}
+
+		if (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500)
+			flag = false;
+
 		dbText(410, 0, "First Depth Search Algorithm");
-		dbSync ( );
+		//write << counter;
+			//dbText(440, 20, "COLLISION!!!");
+
+		dbSync ( ); // updates screen
 		//++i;
 	}
 
@@ -91,35 +205,32 @@ void DarkGDK ( void ){
 	const int r = 20;
 	const int c = 20;
 
+	draw();
+
 	Cell ** maze = new Cell *[r+1];
 
 	for (int i = 1; i <= r; ++i)
 		maze[i] = new Cell[c+1]; 
 
-	for (int k = 1; k <= r; ++k){  // sets E and W borders for maze
-		maze[k][1].setCell("border", 'w', 1);
-		maze[k][20].setCell("border",'e', 1);
-
-		}
-	for (int l = 1; l <= c; ++l){ // sets N and S borders for maze
-		maze[1][l].setCell("border", 'n', 1);
-		maze[20][l].setCell("border", 's', 1);
-		}
+	initialize(r, c, maze); 
 
 	srand(time(NULL));	
-	int Current = rand()%400 + 1;
+	int Current = rand()% (400 + 1);
 	
 	int row = getrow(Current); // returns row from Convert.h
 	int col = getcol(Current); // returns column
 
+	//maze[row][col].setVisited(1); // marked as part of the  maze
+
 	remove("order.txt");
 	remove("walllist.txt");
+
 	ofstream store("order.txt", ios::app);
 	store << Current << " " << row << " " << col << endl;
 
 	vector<string> list;
 	pushbacker(maze[row][col], Current, list);
-	walldestiny(list, Current, maze);
+	walldestiny(list, maze);
 
 	while ( LoopGDK ( ) )
 	{
