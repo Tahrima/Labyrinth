@@ -215,7 +215,7 @@ void DarkGDK ( void ){
 	initialize(r, c, maze); 
 
 	srand(time(NULL));	
-	int Current = rand()% (400 + 1);
+	int Current = (rand()% 400) + 1;
 	
 	int row = getrow(Current); // returns row from Convert.h
 	int col = getcol(Current); // returns column

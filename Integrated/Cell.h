@@ -184,6 +184,7 @@ void pushbacker (Cell & current, int cur, vector<string> &list){
 	}
 
 	remove("walllist.txt");
+	
 	ofstream w("walllist.txt", ios::app);
 	for (int i = 0; i < list.size(); ++i)
 		w << list[i] << endl;
@@ -192,7 +193,7 @@ void pushbacker (Cell & current, int cur, vector<string> &list){
 
 void walldestiny (vector<string> &list, Cell ** maze){
 
-	for (int i = 0; i < 5; ++i){
+	for (int i = 0; i < 50; ++i){
     
         ofstream store("order.txt", ios::app);
 
@@ -218,10 +219,6 @@ void walldestiny (vector<string> &list, Cell ** maze){
 		int rand_row = getrow(numero);
 		int rand_col = getcol(numero);
 
-		store << rand_row << " " << rand_col << endl;
-		//bool border = false;*/
-
-        //store << numero << " " << wallo;
         int neighbor;   // finds the neighbor cell number depending on char from the string
 
 		if (wallo == 'n' && maze[rand_row][rand_col].border.n != 1)
@@ -280,12 +277,15 @@ void walldestiny (vector<string> &list, Cell ** maze){
             
             //dbDeleteSprite(numero); // box deletion
             pushbacker(maze[r][c],neighbor, list);
-            list[s].erase();//REMOVE RANDOM WALL FROM WALL LIST
+            //list[s].erase();//REMOVE RANDOM WALL FROM WALL LIST
+            list.erase(remove(list.begin(), list.end(), wall), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
             list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
 
         }
         else if (maze[r][c].Visited() == 1){//checks if neighboring cells IS visited
-            list[s].erase();//REMOVE RANDOM WALL FROM WALL LIST
+            //list[s].erase();//REMOVE RANDOM WALL FROM WALL LIST
+			
+			list.erase(remove(list.begin(), list.end(), wall), list.end()); 
             list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
         }
     }
