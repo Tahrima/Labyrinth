@@ -8,11 +8,12 @@
 #include "Convert.h"
 #include <algorithm>
 #include "DarkGDK.h"
+#include <sstream>
 
 using namespace std;
 
 class Cell{
-friend void pushbacker(Cell&, int, vector<string> *);
+friend void pushbacker(Cell&, int, vector<string> *, int);
 friend void walldestiny(vector<string> *, int);
 private:
 	class Direction{	// nested class Direction
@@ -26,6 +27,7 @@ private:
 		};
 	int visited;
 public:
+	int count;
 	Cell ();
 	void setCell(string, char, int);
 	void setAllofCell(string, string);
@@ -112,6 +114,7 @@ Cell::Cell(){
 	walls.setAll(1,1,1,1);
 	backtrack.setAll(0,0,0,0);
 	solution.setAll(0,0,0,0);
+	visited = 0;
 }
 
 int Cell::Visited(){
@@ -155,37 +158,47 @@ int Cell::getDirection(string info, char setting){
 
 //void walldestiny (vector<string> &, int, Cell **);
 
-void pushbacker (Cell & current, int cur, vector<string> &list){
+void pushbacker (Cell & current, int cur, vector<string> &list, int count){
 	
 	remove("temp.txt");
 	ofstream write("temp.txt", ios::app);
-	ifstream read ("temp.txt");
-	string wall;
+	stringstream walln, walls, walle, wallw;
+	string final;
 
 	if (current.border.n != 1 && current.walls.n != 0){
-		write << cur << "n" << endl;
-		read >> wall;
-		list.push_back(wall);
+		walln << cur;
+		final = walln.str() + "n";
+		write << final << endl;
+		list.push_back(final);
 	}
 	if (current.border.s != 1 && current.walls.s != 0){
-		write << cur << "s" << endl;
-		read >> wall;
-		list.push_back(wall);
+		walls << cur;
+		final = walls.str() + "s";
+		write << final << endl;
+		list.push_back(final);
 	}
 	if (current.border.e != 1 && current.walls.e != 0){
-		write << cur << "e" << endl;
-		read >> wall;
-		list.push_back(wall);
+		walle << cur;
+		final = walle.str() + "e";
+		write << final << endl;
+		list.push_back(final);
 	}
 	if (current.border.w != 1 && current.walls.w != 0){
-		write << cur << "w" << endl;
-		read >> wall;
-		list.push_back(wall);
+		wallw << cur;
+		final = wallw.str() + "w";
+		write << final << endl;
+		list.push_back(final);
 	}
 
-	remove("walllist.txt");
+	current.setVisited(1);
+
+	stringstream num;
+	num << count;
+	string cool = num.str();
+	string text = "walllist" + cool + ".txt";
+	//remove("walllist.txt");
 	
-	ofstream w("walllist.txt", ios::app);
+	ofstream w(text.c_str());
 	for (int i = 0; i < list.size(); ++i)
 		w << list[i] << endl;
 
@@ -193,17 +206,18 @@ void pushbacker (Cell & current, int cur, vector<string> &list){
 
 void walldestiny (vector<string> &list, Cell ** maze){
 
-	for (int i = 0; i < 50; ++i){
+	int count = 1;
+
+	for (int x = 0; x < 300; ++x){
     
         ofstream store("order.txt", ios::app);
 
-        int size = list.size(); // gets size of wall list
-        //store << size << endl;
-        
-        int s = rand()% size;  // gets random # from wall list
-        //store << s << endl; 
-        
-        string wall = list[s]; // gets that string from wall list[random #]
+        int size = list.size(); // gets size of wall list 
+		store << "SIZE = " << size << endl;
+        int s = (rand() % size) + 1;  // gets random # from wall list
+		store << "RAND = " << s << endl;
+
+        string wall = list[s-1]; // gets that string from wall list[random #]
         store << wall << endl;
 
         int w = wall.size(); // parsing of string to int and char
@@ -260,11 +274,6 @@ void walldestiny (vector<string> &list, Cell ** maze){
         //NOW WE MUST REMOVE 'nstring' ALONG WITH THE RANDOM WALL FROM THE WALL LIST
 
         if (maze[r][c].Visited() == 0){//checks if neighboring cell is NOT visited
-            //list[s] = -2;// DELETE THE WALL
-            maze[r][c].setVisited(1);
-            maze[r][c].setCell("walls", opposite, 0);
-			//or
-            maze[rand_row][rand_col].setCell("walls", wallo, 0);
 
             if (wallo == 'n')
                 dbDeleteSprite( (20 * (rand_row - 1)) + rand_col + 1000); // wall/line deletion
@@ -274,44 +283,41 @@ void walldestiny (vector<string> &list, Cell ** maze){
                 dbDeleteSprite( (21 * (rand_row - 1)) + rand_col + 1 + 500);
             else if (wallo == 'w')
                 dbDeleteSprite( (21 * (rand_row - 1)) + rand_col + 500);
-            
-            //dbDeleteSprite(numero); // box deletion
-            pushbacker(maze[r][c],neighbor, list);
-            //list[s].erase();//REMOVE RANDOM WALL FROM WALL LIST
-            list.erase(remove(list.begin(), list.end(), wall), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
-            list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
+
+			maze[r][c].setCell("walls", opposite, 0);
+            maze[rand_row][rand_col].setCell("walls", wallo, 0);
+
+
+            ++count;
+
+			vector<string>::iterator check;
+            check = find(list.begin(), list.end()-1, nstring);
+
+            if(*check == nstring)
+            {
+                 list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
+            }
+			list.erase(remove(list.begin(), list.end(), wall), list.end()); 
+
+			pushbacker(maze[r][c], neighbor, list, count);
+            //list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
 
         }
         else if (maze[r][c].Visited() == 1){//checks if neighboring cells IS visited
-            //list[s].erase();//REMOVE RANDOM WALL FROM WALL LIST
-			
+
+			vector<string>::iterator check;
+            check = find(list.begin(), list.end()-1, nstring);
+
+            if(*check == nstring)
+            {
+                 list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
+            }
 			list.erase(remove(list.begin(), list.end(), wall), list.end()); 
-            list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
+            //list.erase(remove(list.begin(), list.end(), nstring), list.end()); // REMOVE NEIGHBOR WALL FROM WALL LIST
         }
+		
+		//dbWait(1000);
     }
 } 
 
-	/*if (maze[r][c].Visited() == 0)//checks if neighboring cells is NOT visited
-	{
-		list[s] = -2; // DELETE THE WALL
-		if(wallo == 'n')
-			//DO STUFF
-		if(wallo == 'n')
-			//DO STUFF
-			if(wallo == 'n')
-			//DO STUFF
-			if(wallo == 'n')
-			//DO STUFF
-		maze[r][c].setCell("walls", 'n', 0);
-		maze[r][c].setVisited(1);
-	}
-	else if (maze[r][c].Visited() == 1)//checks if neighboring cells ARE visited
-	{
-		list[s] = -1; // REMOVE WALL FROM WALL LIST	
-	
-	}
-
-		//delete the wall
-		// 
-*/
 #endif
