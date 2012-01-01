@@ -214,7 +214,7 @@ void DarkGDK ( void ){
 
 	initialize(r, c, maze); 
 
-	srand(time(NULL));	
+	srand((unsigned)time(0));	
 	int Current = (rand()% 400) + 1;
 	
 	int row = getrow(Current); // returns row from Convert.h
@@ -226,10 +226,11 @@ void DarkGDK ( void ){
 	remove("walllist.txt");
 
 	ofstream store("order.txt", ios::app);
-	store << Current << " " << row << " " << col << endl;
+	store << row << " " << col << endl;
 
+	int count = 1;
 	vector<string> list;
-	pushbacker(maze[row][col], Current, list);
+	pushbacker(maze[row][col], Current, list, count);
 	walldestiny(list, maze);
 
 	while ( LoopGDK ( ) )
