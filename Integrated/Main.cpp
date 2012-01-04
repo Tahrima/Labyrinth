@@ -1,4 +1,4 @@
-/*#include <iostream>
+#include <iostream>
 #include <fstream>
 #include "DarkGDK.h"
 #include "Cell.h"
@@ -38,21 +38,20 @@ void DarkGDK ( void )
 
 	ofstream write ("col.txt", ios::app);
 
-	int yint = 405;
-	int xint = 405;
-
+	int yint = 5;
+	int xint = 5;
+		
 	dbLoadImage("sprite.png", 4);
 	dbLoadImage("bigsquare.png", 5);
 
 	bool flag = true;
 	char key = '0';
-
+dbSprite(1500, xint, yint, 4);
 	while ( LoopGDK ( ) )
 	{
 
 		dbSetTextFont("Arial");
 		dbSetTextSize(15);
-		/* REDRAWS MAZE
 		static bool bClick = false; 
 		if ( dbMouseClick() == 1 )
 			bClick = true;
@@ -65,9 +64,9 @@ void DarkGDK ( void )
 				all2[i] = new Cell[c+1]; // creates 2nd dimension (d2)
 			initialize(r, c, all2);
 			algorithm(all2);
-		}*/
+		}
 
-		//dbSprite(1500, xint, yint, 4);
+
 
 		// NEED TO ACCOUNT FOR OUT OF RANGE COORDINATES 
 		// NEED TO FIND OUT WHY IT GOES OTHER PLACES SOMETIMES DURING COLLISION
@@ -111,8 +110,8 @@ void DarkGDK ( void )
 
 
 
-	/*	dbSprite(1499, 425, 425, 5);
-
+		//dbSprite(1499, 5, 5, 5);
+/*
 		if (flag == false){
 			while (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500){
 				if (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500,0) < 1001 && key == 'e'){
@@ -146,27 +145,59 @@ void DarkGDK ( void )
 			}
 			flag = true;
 		}
+*/
+		if (dbUpKey() == 1){
+			dbRotateSprite(1500,0);
+			dbMoveSprite(1500,2);
 
-		if (dbUpKey() && !dbDownKey() && !dbRightKey() && !dbLeftKey() && flag == true){
-			yint -= 1;
-			key = 'n';
+					
+			if(dbSpriteCollision(1500,0) > 500)
+			{
+			dbRotateSprite(1500,180);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			}
 		}
-		else if (dbDownKey() && !dbUpKey() && !dbRightKey() && !dbLeftKey() && flag == true){
-			yint += 1;
-			key = 's';
+		else if (dbDownKey()== 1){
+			dbRotateSprite(1500,180);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+					
+			if(dbSpriteCollision(1500,0) > 500)
+			{
+			dbRotateSprite(1500,0);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			}
 		}
-		else if (dbRightKey() && !dbUpKey() && !dbDownKey() && !dbLeftKey() && flag == true){
-			xint += 1;
-			key = 'e';
+		else if (dbRightKey()== 1){
+			dbRotateSprite(1500,90);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			if(dbSpriteCollision(1500,0) > 500)
+			{
+			dbRotateSprite(1500,270);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			}
 		}
-		else if (dbLeftKey() && !dbUpKey() && !dbDownKey() && !dbRightKey() && flag == true){
-			xint -= 1;
-			key = 'w';
+		else if (dbLeftKey()== 1){
+			dbRotateSprite(1500,270);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+		
+			if(dbSpriteCollision(1500,0) > 500)
+			{
+			dbRotateSprite(1500,90);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			}
 		}
-
-		if (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500)
+		//if(dbSpriteCollision(1500,0) < 500)
+			//break;
+		/*if (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500)
 			flag = false;
-
+*/
 		dbText(410, 0, "First Depth Search Algorithm");
 		//write << counter;
 			//dbText(440, 20, "COLLISION!!!");
@@ -180,10 +211,10 @@ void DarkGDK ( void )
 	delete[] all;
 
 	return;
-}*/
+}
 
 
-#include <iostream>
+/*#include <iostream>
 #include <ctime>
 #include <vector>
 #include "Cell.h"
@@ -224,6 +255,7 @@ void DarkGDK ( void ){
 
 	remove("order.txt");
 	remove("walllist.txt");
+	remove("deleted.txt");
 
 	ofstream store("order.txt", ios::app);
 	store << row << " " << col << endl;
@@ -238,4 +270,4 @@ void DarkGDK ( void ){
 		dbSync ( );
 	}
 
-}
+}*/
