@@ -46,7 +46,7 @@ void DarkGDK ( void )
 
 	bool flag = true;
 	char key = '0';
-dbSprite(1500, xint, yint, 4);
+	dbSprite(1500, xint, yint, 4);
 	while ( LoopGDK ( ) )
 	{
 
@@ -65,7 +65,6 @@ dbSprite(1500, xint, yint, 4);
 			initialize(r, c, all2);
 			algorithm(all2);
 		}
-
 
 
 		// NEED TO ACCOUNT FOR OUT OF RANGE COORDINATES 
@@ -146,6 +145,7 @@ dbSprite(1500, xint, yint, 4);
 			flag = true;
 		}
 */
+
 		if (dbUpKey() == 1){
 			dbRotateSprite(1500,0);
 			dbMoveSprite(1500,2);
@@ -193,11 +193,12 @@ dbSprite(1500, xint, yint, 4);
 			dbRotateSprite(1500, 0);
 			}
 		}
+	
 		//if(dbSpriteCollision(1500,0) < 500)
 			//break;
-		/*if (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500)
+		if (dbSpriteCollision(1500, 0) > 500 && dbSpriteCollision(1500, 0) < 1500)
 			flag = false;
-*/
+
 		dbText(410, 0, "First Depth Search Algorithm");
 		//write << counter;
 			//dbText(440, 20, "COLLISION!!!");
@@ -265,9 +266,63 @@ void DarkGDK ( void ){
 	pushbacker(maze[row][col], Current, list, count);
 	walldestiny(list, maze);
 
+	int yint = 5;
+	int xint = 5;
+		
+	dbLoadImage("sprite.png", 4);
+	dbSprite(1500, xint, yint, 4);
+
 	while ( LoopGDK ( ) )
 	{
 		dbSync ( );
+
+		if (dbUpKey() == 1){
+			dbRotateSprite(1500,0);
+			dbMoveSprite(1500,2);
+
+					
+			if(dbSpriteCollision(1500,0) > 500)
+			{
+			dbRotateSprite(1500,180);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			}
+		}
+		else if (dbDownKey()== 1){
+			dbRotateSprite(1500,180);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+					
+			if(dbSpriteCollision(1500,0) > 500)
+			{
+			dbRotateSprite(1500,0);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			}
+		}
+		else if (dbRightKey()== 1){
+			dbRotateSprite(1500,90);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			if(dbSpriteCollision(1500,0) > 500)
+			{
+			dbRotateSprite(1500,270);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			}
+		}
+		else if (dbLeftKey()== 1){
+			dbRotateSprite(1500,270);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+		
+			if(dbSpriteCollision(1500,0) > 500)
+			{
+			dbRotateSprite(1500,90);
+			dbMoveSprite(1500,2);
+			dbRotateSprite(1500, 0);
+			}
+		}
 	}
 
 }*/
