@@ -2,27 +2,30 @@
 #define _CellImp_h_
 
 #include <iostream>
-#include "Cell.h"
+#include "FirstDepth.h"
 #include "maze.h"
 #include "Convert.h"
 #include <fstream>
 #include <ctime>
 #include <vector>
 #include <stack>
+#include "create2.h"
+#include "fileiop.h"
 
 using namespace std;
 
 int* get_neighbors_with_walls(Cell **, int, int, int );
 
-void initialize (int r, int c, Cell ** all){
+
+void initialize (int r, int c, Cell ** maze){
 	for (int k = 1; k <= r; ++k){  // sets E and W borders for maze
-		all[k][1].setCell("border", 'w', 1);
-		all[k][20].setCell("border",'e', 1);
+		maze[k][1].setCell("border", 'w', 1);
+		maze[k][20].setCell("border",'e', 1);
 	}
 
 	for (int l = 1; l <= c; ++l){ // sets N and S borders for maze
-		all[1][l].setCell("border", 'n', 1);
-		all[20][l].setCell("border", 's', 1);
+		maze[1][l].setCell("border", 'n', 1);
+		maze[20][l].setCell("border", 's', 1);
 	}
 	
 	/*for (int i = 1; i <= 20; ++i){  //stores border bits in output file ; 
@@ -33,6 +36,9 @@ void initialize (int r, int c, Cell ** all){
 
 void algorithm (Cell ** all){
 
+	//int decide2 = 1;
+
+
 	vector<int> numstacker (401); // vector for stack
 	stack<int, vector<int> > cellstack (numstacker); // initializing stack with 401 elements
 	
@@ -40,6 +46,7 @@ void algorithm (Cell ** all){
 	srand((unsigned)time(NULL));
 
 	int current = rand() % (400 + 1); // selects random cell to start with
+
 	//dbDeleteSprite(current); // selects box that corresponds to cell
 
 	ofstream cool ("current.txt", ios::app); // stores current cell
@@ -86,26 +93,57 @@ void algorithm (Cell ** all){
 			if (neighbors[0] == adjacentCells[ns]){ // N DELETES HORIZONTAL
 			all[nrow][ncol].setCell("walls", 's', 0); // sets S wall bit of new cell to 0
 			all[row][col].setCell("walls", 'n', 0); // sets N wall  bit of current cell to 0
+			
+			if(Returncreation() == 1)
+			{
+			dbLoadImage("bakround.png",4998);
+			dbSprite(4998,0,0,4998);
+			dbSizeSprite ( 4998, 640, 500 );
+			dbSync();
+			for(int i = 0; i < 4000; i++)
+				dbSetSpritePriority(i,5);
+			dbSetSpritePriority(4998,2);
+			dbSync();
+			deletion((20 * (row - 1)) + col + 1000);
+			deletion(adjacentCells[ns]);
+			}
+			else if(Returncreation() == 0){
 			dbDeleteSprite( (20 * (row - 1)) + col + 1000); // line deletion
-			dbDeleteSprite(adjacentCells[ns]); // box deletion
+			//dbDeleteSprite(adjacentCells[ns]);
+			} // box deletion
 			}
 			else if (neighbors[1] == adjacentCells[ns]){ //S DELETES HORIZONTAL
 			all[nrow][ncol].setCell("walls", 'n', 0); // sets N wall bit of new cell to 0
 			all[row][col].setCell("walls", 's', 0); // sets S wall bit of current cell to 0
+			if(Returncreation() == 1){
+			deletion((20 * (row)) + col + 1000);
+			deletion(adjacentCells[ns]);}
+			if(Returncreation() == 0){
 			dbDeleteSprite( (20 * (row)) + col + 1000); // line deletion
-			dbDeleteSprite(adjacentCells[ns]); // box deletion
+			//dbDeleteSprite(adjacentCells[ns]);
+			} // box deletion
 			}
 			else if (neighbors[2] == adjacentCells[ns]){ // E DELETES VERTICAL
 			all[nrow][ncol].setCell("walls", 'w', 0); // sets W wall bit of new cell to 0
 			all[row][col].setCell("walls", 'e', 0); // sets E wall bit of current cell to 0
+			if(Returncreation() == 1){
+			deletion((21 * (row -1)) + col + 1 + 500);
+			deletion(adjacentCells[ns]);}
+			if(Returncreation() == 0){
 			dbDeleteSprite( (21 * (row -1)) + col + 1 + 500); // line deletion
-			dbDeleteSprite(adjacentCells[ns]); // box deletion
+			//dbDeleteSprite(adjacentCells[ns]);
+			} // box deletion
 			}
 			else if (neighbors[3] == adjacentCells[ns]){ // W DELETES VERTICAL
 			all[nrow][ncol].setCell("walls", 'e', 0); // sets E wall bit of new cell to 0
 			all[row][col].setCell("walls", 'w', 0); // sets W wall bit of current cell to 0
+			if(Returncreation() == 1){
+			deletion((21 * (row - 1)) + col + 500);
+			deletion(adjacentCells[ns]);}
+			if(Returncreation() == 0){
 			dbDeleteSprite( (21 * (row - 1)) + col + 500); // line deletion
-			dbDeleteSprite(adjacentCells[ns]); // box deletion
+			//dbDeleteSprite(adjacentCells[ns]);
+			} // box deletion
 			}
 			
 			cellstack.push(current); // pushes current cell to the stack
@@ -116,6 +154,12 @@ void algorithm (Cell ** all){
 			current = cellstack.top(); // make current cell the cell at the top of the stack
 			cellstack.pop(); // remove the cell at the top of the stack
 		}
+	}
+
+	//if(decide2 ==0)
+	{
+		for(int i = 1; i < 401; ++i)
+			dbDeleteSprite(i);
 	}
 }
 
@@ -179,5 +223,7 @@ int* get_neighbors_with_walls (Cell ** all, int rc, int cc, int cur){
 	final[0] = c; // final[0] stores number of usable neighbors
 	return final;
 }
+
+
 
 #endif

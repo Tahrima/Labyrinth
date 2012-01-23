@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 int getrow(int random){
 	if (random%20 != 0)
 		return random/20 + 1;

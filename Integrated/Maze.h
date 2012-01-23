@@ -6,11 +6,11 @@
 using namespace std;
 
 void draw()
-{
+{	
 	dbLoadImage("cell.png", 1); // 20 x 20
 	dbLoadImage("v.png", 2); // 20 x 1
 	dbLoadImage("h.png", 3); // 1 x 20
-	
+
 	int sc = 1; // cell counter
 	int scv = 501; // vertical line counter
 	int sch = 1001; // horizontal line counter
@@ -19,20 +19,20 @@ void draw()
 	{
 		for (int x = 0; x < 20; ++x){
 			dbDrawSpritesFirst();
-			dbSprite(sch, x * 20, y * 20, 3);
+			dbSprite(sch, (x+6) * 20, (y+3) * 20, 3);
 			++sch;
 		}
 	}
 	for (int  y =0; y < 20; ++y){ // vertical + cell
 		for (int x = 0; x < 21; ++x){
 			dbDrawSpritesFirst();
-			dbSprite(scv, x * 20, y * 20, 2);
+			dbSprite(scv, (x+6) * 20, (y+3) * 20, 2);
 			++scv;
 		}
 
 		for(int x = 0; x < 20; ++x){   
 			dbDrawSpritesFirst();
-			dbSprite(sc, x * 20, y * 20, 1);
+			dbSprite(sc, (x+6) * 20, (y+3) * 20, 1);
 			++sc;
 		}
 	}
